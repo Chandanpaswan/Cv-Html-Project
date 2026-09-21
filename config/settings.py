@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,9 +60,15 @@ if os.environ.get("DATABASE_URL"):
         "PORT": parsed_database.port or "5432",
     }}
 else:
+    database_path = BASE_DIR / "db.sqlite3"
+    if os.environ.get("VERCEL"):
+        writable_database_path = Path("/tmp/db.sqlite3")
+        if not writable_database_path.exists() and database_path.exists():
+            shutil.copy2(database_path, writable_database_path)
+        database_path = writable_database_path
     DATABASES = {"default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": database_path,
     }}
 
 AUTH_PASSWORD_VALIDATORS = [
