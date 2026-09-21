@@ -1,0 +1,181 @@
+{% load i18n static %}
+<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+  <title>{% block title %}{% endblock %}{% if title %} | {{ title }}{% endif %} | {{ site_title|default:_('Django site admin') }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <link rel="stylesheet" href="{% static 'css/admin-theme.css' %}">
+  {% block extrastyle %}{% endblock %}
+  {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+  <script>
+    (function () {
+      try {
+        const stored = localStorage.getItem('cv-admin-theme');
+        const preferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (preferred ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% static 'admin/css/rtl.css' %}">{% endif %}
+  {% block extrahead %}{% endblock %}
+</head>
+<body class="admin-shell-body {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now 'Z' %}">
+  {% block content %}
+    {% if user.is_authenticated and user.is_staff %}
+      <div class="admin-shell">
+        <aside class="admin-sidebar" aria-label="Sidebar">
+          <div class="brand-wrap">
+            <div class="brand-mark">CP</div>
+            <div class="brand-copy">
+              <strong>Chandan</strong>
+              <small>CMS</small>
+            </div>
+          </div>
+
+          <nav class="sidebar-nav" aria-label="Main navigation">
+            <a class="nav-item{% if request.path == '/admin/' %} active{% endif %}" href="{% url 'admin:index' %}">
+              <span class="nav-icon">⌂</span>
+              <span>Dashboard</span>
+            </a>
+            <a class="nav-item" href="{% url 'admin:cv_personalinformation_changelist' %}"><span class="nav-icon">◉</span><span>Personal Info</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_aboutsection_changelist' %}"><span class="nav-icon">✦</span><span>About</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_experience_changelist' %}"><span class="nav-icon">▣</span><span>Experiences</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_education_changelist' %}"><span class="nav-icon">▤</span><span>Education</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_skill_changelist' %}"><span class="nav-icon">◎</span><span>Skills</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_project_changelist' %}"><span class="nav-icon">◫</span><span>Projects</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_certification_changelist' %}"><span class="nav-icon">◍</span><span>Certifications</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_achievement_changelist' %}"><span class="nav-icon">★</span><span>Achievements</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_service_changelist' %}"><span class="nav-icon">⌁</span><span>Services</span></a>
+            <a class="nav-item" href="{% url 'admin:blog_blogpost_changelist' %}"><span class="nav-icon">✎</span><span>Blog Posts</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_seosettings_changelist' %}"><span class="nav-icon">⚑</span><span>SEO Settings</span></a>
+            <a class="nav-item" href="{% url 'admin:cv_contactmessage_changelist' %}"><span class="nav-icon">✉</span><span>Messages</span></a>
+            <a class="nav-item" href="{% url 'admin:auth_user_changelist' %}"><span class="nav-icon">◎</span><span>Users</span></a>
+            <a class="nav-item" href="{% url 'admin:index' %}"><span class="nav-icon">⚙</span><span>Settings</span></a>
+          </nav>
+
+          <div class="sidebar-card">
+            <span>Live</span>
+            <strong>Portfolio CMS</strong>
+          </div>
+        </aside>
+
+        <div class="admin-main-panel">
+          <header class="admin-topbar">
+            <button type="button" class="sidebar-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+
+            <div class="toolbar-search" aria-label="Search">
+              <span>⌕</span>
+              <input type="search" aria-label="Search admin" placeholder="Search" />
+            </div>
+
+            <div class="toolbar-actions">
+              <button type="button" class="top-icon" aria-label="Notifications">
+                🔔
+                <span class="badge">3</span>
+              </button>
+
+              <button type="button" class="theme-toggle" aria-label="Switch theme">☀</button>
+
+              <div class="user-pill">
+                <div class="avatar">{{ user.get_short_name|default:user.get_username|slice:':1'|upper }}</div>
+                <div>
+                  <strong>{{ user.get_short_name|default:user.get_username }}</strong>
+                  <small>{{ user.email|default:'Admin' }}</small>
+                </div>
+              </div>
+
+              <form method="post" action="{% url 'admin:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+              </form>
+            </div>
+          </header>
+
+          <main class="admin-main-inner">
+            {% block messages %}
+              {% if messages %}
+                <ul class="messagelist">
+                  {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message|capfirst }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endblock %}
+
+            {% block nav-breadcrumbs %}
+              {% if not is_popup %}
+                <div class="breadcrumb-shell">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  {% if breadcrumbs %}
+                    {% for crumb in breadcrumbs %}
+                      <span>›</span>
+                      {% if crumb.url %}
+                        <a href="{{ crumb.url }}">{{ crumb.name }}</a>
+                      {% else %}
+                        <span>{{ crumb.name }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endblock %}
+
+            {% block admin_content %}{% endblock %}
+          </main>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          const toggle = document.querySelector('.theme-toggle');
+          const sidebar = document.querySelector('.admin-sidebar');
+          const sidebarToggle = document.querySelector('.sidebar-toggle');
+
+          const setTheme = function (theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('cv-admin-theme', theme);
+            if (toggle) {
+              toggle.textContent = theme === 'dark' ? '☀' : '☾';
+            }
+          };
+
+          const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+          if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀' : '☾';
+
+          if (toggle) {
+            toggle.addEventListener('click', function () {
+              const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+              setTheme(next);
+            });
+          }
+
+          if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', function () {
+              const isMobile = window.matchMedia('(max-width: 980px)').matches;
+              const className = isMobile ? 'mobile-open' : 'collapsed';
+              sidebar.classList.toggle(className);
+              sidebarToggle.setAttribute('aria-expanded', sidebar.classList.contains(className) ? 'true' : 'false');
+            });
+          }
+        })();
+      </script>
+    {% else %}
+      <div class="login-shell">
+        <div class="login-card">
+          <div class="login-brand">
+            <div class="brand-mark">CP</div>
+            <div>
+              <strong>Chandan</strong>
+              <small>CMS</small>
+            </div>
+          </div>
+          {% block login_content %}{% endblock %}
+        </div>
+      </div>
+    {% endif %}
+  {% endblock %}
+</body>
+</html>

@@ -1,7 +1,30 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
+from blog.models import BlogPost
 from .models import (AboutSection, Achievement, Certification, ContactMessage, Education,
                      Experience, PersonalInformation, Project, SEOSettings, Service, Skill, SocialLink)
+
+
+original_each_context = admin.site.each_context
+
+
+def custom_admin_each_context(request):
+    context = original_each_context(request)
+    context["dashboard_stats"] = [
+        {"label": "Total Experience", "value": Experience.objects.count(), "icon": "EXP"},
+        {"label": "Projects", "value": Project.objects.count(), "icon": "PRJ"},
+        {"label": "Skills", "value": Skill.objects.count(), "icon": "SKL"},
+        {"label": "Certifications", "value": Certification.objects.count(), "icon": "CRT"},
+        {"label": "Achievements", "value": Achievement.objects.count(), "icon": "ACH"},
+        {"label": "Blog Posts", "value": BlogPost.objects.count(), "icon": "BLG"},
+        {"label": "Contact Messages", "value": ContactMessage.objects.count(), "icon": "MSG"},
+    ]
+    return context
+
+
+admin.site.each_context = custom_admin_each_context
+admin.site.index_template = "admin/index.html"
 
 
 class VisibleOrderedAdmin(admin.ModelAdmin):
@@ -62,8 +85,19 @@ class CertificationAdmin(VisibleOrderedAdmin):
 
 @admin.register(Achievement)
 class AchievementAdmin(VisibleOrderedAdmin):
-    list_display = ("title", "year", "sort_order", "is_visible")
+    list_display = ("title", "year", "description", "is_visible", "sort_order", "action_links")
+    list_editable = ("year", "is_visible", "sort_order")
     search_fields = ("title", "description")
+
+    @admin.display(description="Actions")
+    def action_links(self, obj):
+        change_url = f"/admin/cv/achievement/{obj.pk}/change/"
+        delete_url = f"/admin/cv/achievement/{obj.pk}/delete/"
+        return format_html(
+            '<div class="action-links"><a href="{}">Edit</a><a href="{}" class="delete-link">Delete</a></div>',
+            change_url,
+            delete_url,
+        )
 
 
 @admin.register(SocialLink)

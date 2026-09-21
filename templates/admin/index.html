@@ -1,0 +1,71 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Dashboard' %}{% endblock %}
+
+{% block admin_content %}
+<div class="dashboard-page">
+  <div class="page-header-row">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Welcome back, {{ user.get_short_name|default:user.get_username }}</h1>
+    </div>
+    <a class="primary-btn" href="{% url 'admin:cv_personalinformation_changelist' %}">Manage content</a>
+  </div>
+
+  <section class="stat-grid">
+    {% for stat in dashboard_stats %}
+      <article class="stat-card">
+        <div class="stat-icon">{{ stat.icon }}</div>
+        <div>
+          <span>{{ stat.label }}</span>
+          <strong>{{ stat.value }}</strong>
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="dashboard-panels">
+    <div class="panel panel-large">
+      <div class="panel-header">
+        <h2>Content overview</h2>
+        <a href="{% url 'admin:index' %}">View all</a>
+      </div>
+
+      <div class="app-list-grid">
+        {% for app in app_list %}
+          <article class="app-card">
+            <div class="app-card-header">
+              <span class="app-badge">{{ app.name|slice:':1'|upper }}</span>
+              <h3>{{ app.name }}</h3>
+            </div>
+            <ul>
+              {% for model in app.models %}
+                <li>
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% else %}
+                    <span>{{ model.name }}</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="panel panel-side">
+      <div class="panel-header">
+        <h2>Recent activity</h2>
+      </div>
+      <ul class="activity-list">
+        <li><span>Personal information</span><strong>Updated</strong></li>
+        <li><span>Blog posts</span><strong>Ready</strong></li>
+        <li><span>Contact messages</span><strong>{{ dashboard_stats.6.value }} pending</strong></li>
+        <li><span>SEO settings</span><strong>Active</strong></li>
+      </ul>
+    </aside>
+  </section>
+</div>
+{% endblock %}
