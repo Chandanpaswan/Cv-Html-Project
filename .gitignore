@@ -8,3 +8,5 @@ staticfiles/
 media/*
 !media/.gitkeep
 .vscode/
+.vercel
+.env*
