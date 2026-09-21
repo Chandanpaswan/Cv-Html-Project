@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ seo.title|default:'Chandan Kumar Paswan | SEO & Digital Marketing Specialist' }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ seo.meta_description|default:'SEO, web development and digital marketing strategies that turn search intent into measurable growth.' }}{% endblock %}">
+    <meta name="theme-color" content="#10251f">
+    {% if seo.canonical_url %}<link rel="canonical" href="{{ seo.canonical_url }}">{% endif %}
+    <meta property="og:title" content="{% block og_title %}{{ seo.title|default:'Chandan Kumar Paswan | SEO Specialist' }}{% endblock %}">
+    <meta property="og:description" content="{{ seo.meta_description|default:'SEO, web development and digital marketing strategies that turn search intent into measurable growth.' }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if seo.og_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ seo.og_image.url }}">{% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    {% if seo.twitter_handle %}<meta name="twitter:site" content="{{ seo.twitter_handle }}">{% endif %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header"><nav class="nav wrap" aria-label="Main navigation">
+        <a class="brand" href="{% url 'cv:home' %}#home"><span class="brand-mark">CP</span> Chandan Paswan</a>
+        <button class="nav-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+        <div class="nav-links">
+            <a href="{% url 'cv:home' %}#about">About</a><a href="{% url 'cv:home' %}#experience">Experience</a><a href="{% url 'cv:home' %}#skills">Skills</a><a href="{% url 'cv:home' %}#projects">Projects</a><a href="{% url 'cv:home' %}#education">Education</a><a href="{% url 'cv:home' %}#services">Services</a><a href="{% url 'blog:list' %}">Blog</a><a href="{% url 'cv:home' %}#contact" class="btn">Let's talk <span aria-hidden="true">&#8594;</span></a>
+        </div>
+    </nav></header>
+    {% if messages %}<div class="messages wrap">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+    <footer><div class="wrap footer-inner"><span>&copy; {% now "Y" %} Chandan Kumar Paswan</span><span>SEO / Digital Marketing / Web</span><a href="{% url 'cv:privacy' %}">Privacy</a></div></footer>
+    <button class="back-top" aria-label="Back to top">&#8593;</button>
+    <script src="{% static 'js/site.js' %}" defer></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
