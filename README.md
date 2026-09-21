@@ -47,6 +47,36 @@ python manage.py check --deploy
 
 Run behind HTTPS with Gunicorn or Uvicorn. Store media on durable object storage or a persistent volume, configure email delivery for contact notifications, and never commit `.env`, `db.sqlite3`, or uploads.
 
+## Deploy to Vercel
+
+This repository includes `api/index.py` and `vercel.json` for Vercel's Python runtime. Connect the GitHub repository in Vercel or deploy from the project root with the Vercel CLI:
+
+```powershell
+npm install -g vercel
+vercel login
+vercel
+```
+
+Add these Vercel environment variables before the production deployment:
+
+```text
+DJANGO_SECRET_KEY=<long-random-secret>
+DJANGO_DEBUG=0
+DJANGO_ALLOWED_HOSTS=.vercel.app,your-domain.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://*.vercel.app,https://your-domain.com
+DATABASE_URL=postgresql://...
+```
+
+Run migrations against the production database before using the admin:
+
+```powershell
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py seed_cv
+```
+
+Vercel serverless files are not persistent. Use a hosted PostgreSQL database and an object-storage service for profile photos, project/blog images, and the CV PDF. The local `media/` files are intentionally ignored by Git and should not be treated as production storage.
+
 ## Project layout
 
 ```text
