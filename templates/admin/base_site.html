@@ -3,6 +3,13 @@
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-W3695C39');</script>
+  <!-- End Google Tag Manager -->
   <title>{% block title %}{% endblock %}{% if title %} | {{ title }}{% endif %} | {{ site_title|default:_('Django site admin') }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="NONE,NOARCHIVE">
@@ -23,6 +30,9 @@
   {% block extrahead %}{% endblock %}
 </head>
 <body class="admin-shell-body {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now 'Z' %}">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W3695C39" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   {% block content %}
     {% if user.is_authenticated and user.is_staff %}
       <div class="admin-shell">
